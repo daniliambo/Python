@@ -1,35 +1,15 @@
-BANK: 50.0
-START_PRICE: 3.0
-STOP_PRICE: 2.8
+BANK: 1000.0
+START_PRICE: 20.11483
+STOP_PRICE: 19.093022
 
-1 target: 3.105
-Percent: 3.5%
-Bank: 51.75
+1 target: 21.5432423
+Percent: 7.101%
+Bank: 1071.01
 
-2 target: 3.27
-Percent: 9.0%
-Bank: 54.5
+2 target: 22.864732843
+Percent: 13.376% # процент рассчитывается, как отношение таргета к цене входа: 22.8 / 20.11 и округляется до 3 знака
+Bank: 1133.764
 
-3 target: 3.4
-Percent: 13.333%
-Bank: 56.667
-
-
-
------
-
-BANK: 50.0
-START_PRICE: 3.0
-STOP_PRICE: 2.8
-
-1 target: 3.105
-Percent: 3.5%
-Bank: 51.75
-
-2 target: 3.27
-Percent: 9.0%
-Bank: 54.5
-
-3 target: 3.4
-Percent: 13.333%
-Bank: 56.667
+3 target: 23.5 # процент рассчитывается, как отношение таргета к цене входа: 23.5 / 20.11 и округляется до 3 знака
+Percent: 16.857%
+Bank: 1168.573

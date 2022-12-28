@@ -1,11 +1,9 @@
 Реализовать конвертер трейдерских сделок:
 
-
-
 class StrategyDeal:
-    def __init__(self, bank, entry, targets, close):
-        pass
-        
+def __init__(self, bank, entry, targets, close):
+pass
+
     def get_targets(self):
         # вернуть список таргетов в виде числовых значений float [21.5, 22.8, 23.5]
         pass 
@@ -22,31 +20,24 @@ class StrategyDeal:
         # текстовое представление сделки
         pass
 
-
 def read_data(file_name):
-    pass
-
+pass
 
 def write_data(file_name, data):
-    pass
-    
-    
-def parse_data():
-    pass
+pass
 
+def parse_data():
+pass
 
 def main():
-    # content = read_data('deals.txt')
-    # result = content
-    # write_data('out.txt', result)
-
+# content = read_data('deals.txt')
+# result = content
+# write_data('out.txt', result)
 
 if __name__ == '__main__':    
-    main() 
-    
-    
-# INPUT FILE deal.txt:
+main()
 
+# INPUT FILE deal.txt:
 
 Bank: 1000USD
 
@@ -56,7 +47,6 @@ Target: 21.5432423USD; 22.864732843USD; 23.556789USD
 
 Close: 19.093022USD
 
-
 # OUTPUT FILE out.txt:
 
 BANK: 1000.0
@@ -65,7 +55,8 @@ STOP_PRICE: 19.093022
 
 1 target: 21.5432423
 Percent: 7.101% # процент рассчитывается, как отношение таргета к цене входа: 21.5 / 20.11 и округляется до 3 знака
-Bank: 1071.01 # величина банка, если мы продадим все активы по цене первого таргета: 1000 * 7.101 и округляется до 3 знака
+Bank: 1071.01 # величина банка, если мы продадим все активы по цене первого таргета: 1000 * 7.101 и округляется до 3
+знака
 
 2 target: 22.864732843
 Percent: 13.376% # процент рассчитывается, как отношение таргета к цене входа: 22.8 / 20.11 и округляется до 3 знака
@@ -92,11 +83,3 @@ Bank: 54.5
 3 target: 3.4
 Percent: 13.333%
 Bank: 56.667
-
-
-
-
-
-
-
-

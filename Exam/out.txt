@@ -1,0 +1,15 @@
+BANK: 1000.0
+START_PRICE: 20.11483
+STOP_PRICE: 19.093022
+
+1 target: 21.5432423
+Percent: 7.101%
+Bank: 1071.01
+
+2 target: 22.864732843
+Percent: 13.671%
+Bank: 1136.71
+
+3 target: 23.55678
+Percent: 17.112%
+Bank: 1171.12

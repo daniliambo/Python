@@ -13,6 +13,18 @@ class StrategyDeals:
     def add_deal(self, deal):
         self.deals.append(deal)
 
+    def get_closes(self):
+        all_closes = [getattr(self.deals[x], 'close') for x in range(len(self.deals))]
+        return all_closes
+
+    def get_banks(self):
+        all_banks = [getattr(self.deals[x], 'bank') for x in range(len(self.deals))]
+        return all_banks
+
+    def get_entries(self):
+        all_entries = [getattr(self.deals[x], 'entry') for x in range(len(self.deals))]
+        return all_entries
+
     def get_targets(self):
         # вернуть список таргетов в виде числовых значений float [21.5, 22.8, 23.5]
         all_targets = [getattr(self.deals[x], 'targets') for x in range(len(self.deals))]
@@ -46,20 +58,6 @@ class StrategyDeals:
 
         return result
 
-        # bank = bank(который изначальный) *(100 + percent) / 100
-
-    def get_closes(self):
-        all_closes = [getattr(self.deals[x], 'close') for x in range(len(self.deals))]
-        return all_closes
-
-    def get_banks(self):
-        all_banks = [getattr(self.deals[x], 'bank') for x in range(len(self.deals))]
-        return all_banks
-
-    def get_entries(self):
-        all_entries = [getattr(self.deals[x], 'entry') for x in range(len(self.deals))]
-        return all_entries
-
     deals = None
     targets = None
     percents = None
@@ -68,26 +66,21 @@ class StrategyDeals:
     closes = None
     target_banks = None
 
-    def __str__(self):
+    def prepare_string(self):
         # текстовое представление сделки
-        # print(self.targets)
-        # print(self.percents)
-        # print(self.banks)
-        # print(self.closes)
-        # print(self.entries)
 
-        result_template = list()
+        results = list()
         for i in range(len(self.banks)):
             result_template_target = list()
             inter_result = list()
             inter_result.extend([self.banks[i], self.entries[i], self.closes[i], self.targets[i], self.percents[i],
                                  self.target_banks[i]])
+
             template = """\
 BANK: {}
 START_PRICE: {}
 STOP_PRICE: {}\
 """.format(inter_result[0], inter_result[1], inter_result[2])
-            result_template.append(template)
 
             for j in range(len(inter_result[3])):
                 template_target = """
@@ -97,20 +90,17 @@ Bank: {}
 """.format(j + 1, inter_result[3][j], inter_result[4][j], inter_result[5][j])
 
                 result_template_target.append(template_target)
-            result_template.append(''.join(result_template_target))
-            print('\n'.join(result_template))
 
+            results.append('\n'.join([template, ''.join(result_template_target)]))
 
-        return ""
+        content = '\n-----\n\n'.join(results)
 
-    def write_to_file(self):
-        pass
+        return content
 
-
-def read_data(file_name):
-    with open(file_name, 'r') as f:
-        content = f.read().splitlines()
-    return content
+    def __str__(self):
+        # текстовое представление сделки
+        content = self.prepare_string()
+        return content
 
 
 def parse_data(content):
@@ -119,9 +109,11 @@ def parse_data(content):
     s_targets = 'Target: '
     s_close = 'Close: '
     s_usd = 'USD'
-    content.append('-----')
 
     strategy_deals = StrategyDeals()
+
+    if len(content) != 0:
+        content.append('-----')
 
     # read data
     for line in content:
@@ -132,7 +124,12 @@ def parse_data(content):
             start_index, end_index = line.find(s_entry), line.find(s_usd)
             entry = float(line[start_index + len(s_entry):end_index])
         elif line.startswith(s_targets):
-            targets = [float(x[:-(len(s_usd) + 1)]) for x in line.split()[1:]]
+            targets = []
+            for n in [x[:-(len(s_usd) + 1)] for x in line.split()[1:]]:
+                if n.endswith(';'):
+                    targets.append(float(n[:-1]))
+                else:
+                    targets.append(float(n))
         elif line.startswith(s_close):
             start_index, end_index = line.find(s_close), line.find(s_usd)
             close = float(line[start_index + len(s_close):end_index])
@@ -143,30 +140,46 @@ def parse_data(content):
     return strategy_deals
 
 
+def read_data(file_name):
+    with open(file_name, 'r') as f:
+        content = f.read().splitlines()
+    return content
+
+
 def write_data(file_name, data):
-    pass
+    with open(file_name, 'w') as f:
+        f.write(data)
 
 
 def main():
     content = read_data('deals.txt')
     strategy_deals = parse_data(content)
 
-    StrategyDeals.targets = strategy_deals.get_targets()  # works
-    StrategyDeals.percents = strategy_deals.get_target_percents()
-    StrategyDeals.target_banks = strategy_deals.get_target_banks()
+    StrategyDeals.targets = strategy_deals.get_targets()
     StrategyDeals.banks = strategy_deals.get_banks()
     StrategyDeals.closes = strategy_deals.get_closes()
     StrategyDeals.entries = strategy_deals.get_entries()
+
+    StrategyDeals.percents = strategy_deals.get_target_percents()
+    StrategyDeals.target_banks = strategy_deals.get_target_banks()
+
+    content = strategy_deals.prepare_string()
+
+    # usage
+    write_data('out.txt', content)
     print(strategy_deals)
-    # write_data('out.txt', result)
+
+    # tests
+    # print(StrategyDeals.targets)
+    # print(StrategyDeals.percents)
+    # print(StrategyDeals.target_banks)
+
+    # flattened
+    from itertools import chain
+    # print(list(chain(*StrategyDeals.targets)))
+    # print(list(chain(*StrategyDeals.percents)))
+    # print(list(chain(*StrategyDeals.target_banks)))
 
 
 if __name__ == '__main__':
     main()
-
-# INPUT FILE deal.txt:
-#
-# print(all_banks)
-# print(all_entries)
-# print(all_targets)
-# print(all_closes)
