@@ -13,6 +13,7 @@ class StrategyDeals:
     def add_deal(self, deal):
         self.deals.append(deal)
 
+    # handlers
     def get_closes(self):
         all_closes = [getattr(self.deals[x], 'close') for x in range(len(self.deals))]
         return all_closes
@@ -25,6 +26,17 @@ class StrategyDeals:
         all_entries = [getattr(self.deals[x], 'entry') for x in range(len(self.deals))]
         return all_entries
 
+    # add attributes
+    deals = None
+    targets = None
+    percents = None
+    banks = None
+    entries = None
+    closes = None
+    target_banks = None
+    content = None
+
+    # main task
     def get_targets(self):
         # вернуть список таргетов в виде числовых значений float [21.5, 22.8, 23.5]
         all_targets = [getattr(self.deals[x], 'targets') for x in range(len(self.deals))]
@@ -33,74 +45,63 @@ class StrategyDeals:
     def get_target_percents(self):
         # вернуть список процентов, как в примере, округленные до 3 знака [6.912, 13.376, 16.857]
         # target to entry and return tuples
-        all_entries = self.get_entries()
-        all_targets = self.get_targets()
         result = list()
 
-        for i in range(len(all_entries)):
+        for i in range(len(self.entries)):
             inter_result = list()
-            for j in range(len(all_targets[i])):
-                inter_result.append(round((all_targets[i][j] / all_entries[i] - 1) * 100, 3))
+            for j in range(len(self.targets[i])):
+                inter_result.append(round((self.targets[i][j] / self.entries[i] - 1) * 100, 3))
             result.append(inter_result)
 
         return result
 
     def get_target_banks(self):
         # список значений банков, если продавать активы по таргетам, как в пример, округленные до 3 знака [1069.12, 1133.764, 1168.573]
-        all_banks = self.get_banks()
-        all_percents = self.get_target_percents()
         result = list()
-        for i in range(len(all_banks)):
+        for i in range(len(self.banks)):
             inter_result = list()
-            for j in range(len(all_percents[i])):
-                inter_result.append(round(all_banks[i] * (100 + all_percents[i][j]) / 100, 3))
+            for j in range(len(self.percents[i])):
+                inter_result.append(round(self.banks[i] * (100 + self.percents[i][j]) / 100, 3))
             result.append(inter_result)
 
         return result
 
-    deals = None
-    targets = None
-    percents = None
-    banks = None
-    entries = None
-    closes = None
-    target_banks = None
-
     def prepare_string(self):
         # текстовое представление сделки
 
-        results = list()
+        results = list()  # list with all deals
+
+        # looping through first
         for i in range(len(self.banks)):
             result_template_target = list()
             inter_result = list()
             inter_result.extend([self.banks[i], self.entries[i], self.closes[i], self.targets[i], self.percents[i],
                                  self.target_banks[i]])
-
             template = """\
 BANK: {}
 START_PRICE: {}
 STOP_PRICE: {}\
 """.format(inter_result[0], inter_result[1], inter_result[2])
 
+            # looping through second
             for j in range(len(inter_result[3])):
                 template_target = """
 {} target: {}
 Percent: {}%
 Bank: {}
 """.format(j + 1, inter_result[3][j], inter_result[4][j], inter_result[5][j])
-
+                # 2nd loop
                 result_template_target.append(template_target)
-
+            # 1st loop
             results.append('\n'.join([template, ''.join(result_template_target)]))
-
+        # out of loops
         content = '\n-----\n\n'.join(results)
 
         return content
 
     def __str__(self):
         # текстовое представление сделки
-        content = self.prepare_string()
-        return content
+        return self.content
 
 
 def parse_data(content):
@@ -152,9 +153,11 @@ def write_data(file_name, data):
 
 
 def main():
+    # load and parse the data
     content = read_data('deals.txt')
     strategy_deals = parse_data(content)
 
+    # add attributes
     StrategyDeals.targets = strategy_deals.get_targets()
     StrategyDeals.banks = strategy_deals.get_banks()
     StrategyDeals.closes = strategy_deals.get_closes()
@@ -163,7 +166,9 @@ def main():
     StrategyDeals.percents = strategy_deals.get_target_percents()
     StrategyDeals.target_banks = strategy_deals.get_target_banks()
 
+    # add content as attribute
     content = strategy_deals.prepare_string()
+    StrategyDeals.content = content
 
     # usage
     write_data('out.txt', content)
